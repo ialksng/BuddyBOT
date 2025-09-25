@@ -23,7 +23,7 @@ router.post("/test", async(req, res) => {
 // Get all threads
 router.get("/thread", async(req, res) => {
     try {
-        const threads = await Thread.find({}).sort({updated: -1});
+        const threads = await Thread.find({}).sort({updatedAt: -1});
         // desc order of updatedAt...most recent data on top
         res.json(threads);
     } catch(err) {
@@ -71,10 +71,10 @@ router.post("/chat", async(req, res) => {
     const {threadId, message} = req.body;
 
     if(!threadId || !message) {
-        res.status(404).json({error: "Missing required fields"});
+        res.status(400).json({error: "Missing required fields"});
     }
     try {
-        const thread = await Thread.findOne({threadId});
+        let thread = await Thread.findOne({threadId});
         if(!thread) {
             // create a new thread in DB
             thread = new Thread({

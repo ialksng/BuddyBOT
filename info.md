@@ -99,7 +99,7 @@ chat.js
 OpenAI API <----------- |               |<------------------------| |           | |
             ---reply--->|               |   {threadId, message}   | |  _______  | |
                \        |               |                         | | |_______|-----------message
-                \       |               |-------response---------->| |___________| |
+                \       |               |-------response--------->| |___________| |
                  \      |_______________|                         |_______________|
     threadId      \       /
         /\         \     /
@@ -115,4 +115,72 @@ DB store reply (assistant)
 
 * Routes can be tested by Postman API
 
+# FE
+npm create vite@latest
+npm i
+npm run dev
 
+Components
+
+         sidebar                                    chatWindow = navbar + chatInput
+            |                                           |
+            |                                           |
+ ___________________________________________________________________________________________
+|                     |                                                                    ------------------- navbar
+|                     |_____________________________________________________________________|
+|                     |            ___________________________________________              |
+|                     |           |                                           |             |
+|                     |           |                                           |             |
+|                     |           |                                           |             |
+|                     |           |                                           |             |
+|                     |           |                                           |             |
+|                     |           |                                           |-------------------------- chat
+|                     |           |                                           |             |
+|                     |           |                                           |             |
+|                     |           |                                           |             |
+|                     |           |                                           |             |
+|                     |           |                                           |             |
+|                     |           |                                           |             |
+|                     |           |                                           |             |
+|                     |           |                                           |             |
+|                     |           |                                           |             |  
+|                     |           |                                           |             |
+|                     |           |                                           |             |
+|                     |           |___________________________________________|             |
+|                     |              _______________________________________                |
+|                     |             |                                       |               |
+|                     |             |                                       |------------------------ chatInput
+|                     |             |_______________________________________|               |
+|_____________________|_____________________________________________________________________|
+
+In React, a state variable is needed when your component’s UI needs to change dynamically based on some data.
+
+Functionalites
+1. sending prompt ---> reply
+    loader
+2. show our chats (prompt+reply)
+
+revChats = [{role: user     }, {role: assistant     }]
+             content:|          content:   |
+                     |                     |
+                  userDiv               buddyDiv
+
+
+1. Formatting of reply
+2. latestReply ==> typing effect
+
+                            prompt1     |
+reply1                                  |
+                            prompt2     |
+reply2: latestReply ==> typing effect   |
+   |                                    |
+latestReply                            latest
+
+3. show all Threads --> DB (prevChats)
+
+Future Scope of the Project:
+1. Implement User Authentication &Authorization
+2. Implement light & dark theme
+3. Implement Functionality forDropdown 
+4. Add Voice Feature
+5. Deploy

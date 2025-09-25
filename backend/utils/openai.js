@@ -5,7 +5,7 @@ const getOpenAIAPIResponse = async(message) => { // user gen. response
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+            "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
         },
         body: JSON.stringify({
             model: "gpt-4o-mini",
