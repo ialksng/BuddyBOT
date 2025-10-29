@@ -65,15 +65,17 @@ const connectDB = async () => {
 };
 
 // -------- Serve Frontend (React Build) --------
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// 🏁 Serve Frontend (Production Build)
+if (process.env.NODE_ENV === "production") {
+  const frontendPath = path.join(__dirname, "../frontend/dist");
+  app.use(express.static(frontendPath));
 
-const frontendPath = path.join(__dirname, "../frontend/dist");
-app.use(express.static(frontendPath));
+  // ✅ Express 5-compatible catch-all route
+  app.get(/.*/, (req, res) => {
+    res.sendFile(path.resolve(frontendPath, "index.html"));
+  });
+}
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(frontendPath, "index.html"));
-});
 
 // -------- Start Server --------
 const PORT = process.env.PORT || 3000;
