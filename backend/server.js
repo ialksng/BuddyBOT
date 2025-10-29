@@ -34,7 +34,7 @@ app.use(
 // Session and Passport
 app.use(
   session({
-    secret: "secretkey",
+    secret: process.env.SESSION_SECRET || "secretkey",
     resave: false,
     saveUninitialized: false,
   })
@@ -64,9 +64,9 @@ app.use("/api/chat", verifyToken, chatRoutes);
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log("Connected with Database");
+    console.log("✅ Connected with Database");
   } catch (err) {
-    console.error("Failed to connect:", err.message);
+    console.error("❌ Failed to connect with the Database:", err.message);
     process.exit(1);
   }
 };
@@ -74,11 +74,13 @@ const connectDB = async () => {
 // Serve frontend in production
 if (process.env.NODE_ENV === "production") {
   const frontendPath = path.join(__dirname, "../frontend/dist");
+
+  // Serve static files from React build
   app.use(express.static(frontendPath));
 
-  // Express 5-compatible catch-all route
-  app.get(/.*/, (req, res) => {
-    res.sendFile(path.resolve(frontendPath, "index.html"));
+  // Catch-all route to serve index.html
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(frontendPath, "index.html"));
   });
 }
 
@@ -86,5 +88,5 @@ if (process.env.NODE_ENV === "production") {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
   await connectDB();
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
