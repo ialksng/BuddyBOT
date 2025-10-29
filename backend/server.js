@@ -72,16 +72,15 @@ const connectDB = async () => {
 };
 
 // Serve frontend in production
-// Serve frontend in production
 if (process.env.NODE_ENV === "production") {
   const frontendPath = path.join(__dirname, "../frontend/dist");
   app.use(express.static(frontendPath));
 
-  // ✅ Express 5-safe fallback route
-  app.use("*", (req, res) => {
-    res.sendFile(path.resolve(frontendPath, "index.html"));
+  app.get("/*", (req, res) => {
+    res.sendFile(path.join(frontendPath, "index.html"));
   });
 }
+
 
 // Start server
 const PORT = process.env.PORT || 3000;
