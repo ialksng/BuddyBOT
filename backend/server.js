@@ -22,7 +22,7 @@ dotenv.config();
 // ⚙️ App setup
 // ==========================
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 // ==========================
 // 📁 For frontend build (React)
