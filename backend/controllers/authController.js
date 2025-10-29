@@ -4,22 +4,34 @@ import jwt from "jsonwebtoken";
 import sendEmail from "../utils/sendEmail.js";
 import crypto from "crypto";
 
-// Helper: generate JWT
+// Helper: Generate JWT
 const generateToken = (user) =>
   jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, {
     expiresIn: "7d",
   });
 
 // =============================
-// ✳️ SIGNUP
+// SIGNUP
 // =============================
 export const signup = async (req, res) => {
   try {
     const { username, email, password } = req.body;
-
     let user = await User.findOne({ email });
+
+    // If user exists but has no password (Google login before)
+    if (user && !user.password) {
+      user.username = username || user.username;
+      user.password = password;
+      await user.save();
+
+      const token = generateToken(user);
+      return res.status(200).json({ token, user });
+    }
+
+    // If user already exists with a password
     if (user) return res.status(400).json({ message: "User already exists" });
 
+    // Create new user
     const role = (await User.countDocuments()) === 0 ? "admin" : "student";
     user = await User.create({ username, email, password, role });
 
@@ -27,19 +39,25 @@ export const signup = async (req, res) => {
     res.status(201).json({ token, user });
   } catch (err) {
     console.error("Signup Error:", err);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Server error during signup" });
   }
 };
 
 // =============================
-// 🔑 LOGIN
+// LOGIN
 // =============================
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-
     const user = await User.findOne({ email });
+
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
+
+    // If user was created via Google and has no password
+    if (!user.password)
+      return res
+        .status(400)
+        .json({ message: "This account is linked with Google. Please login with Google." });
 
     const isMatch = await user.matchPassword(password);
     if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
@@ -48,19 +66,20 @@ export const login = async (req, res) => {
     res.status(200).json({ token, user });
   } catch (err) {
     console.error("Login Error:", err);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Server error during login" });
   }
 };
 
 // =============================
-// 📧 FORGOT PASSWORD
+// FORGOT PASSWORD
 // =============================
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
     const user = await User.findOne({ email });
+
     if (!user)
-      return res.status(200).json({ message: "If user exists, email sent" });
+      return res.status(200).json({ message: "If user exists, an email has been sent" });
 
     const resetToken = crypto.randomBytes(20).toString("hex");
     const resetUrl = `${process.env.CLIENT_URL}/reset/${resetToken}`;
@@ -69,17 +88,16 @@ export const forgotPassword = async (req, res) => {
     res.status(200).json({ message: "Email sent successfully" });
   } catch (err) {
     console.error("Forgot Password Error:", err);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Server error during password reset" });
   }
 };
 
 // =============================
-// 🔵 GOOGLE LOGIN (API-based)
+// GOOGLE LOGIN (API-based)
 // =============================
-// This will be called after successful Google OAuth redirect
 export const googleLogin = async (req, res) => {
   try {
-    const { id, email, name } = req.body; // if you later use front-end Google API
+    const { id, email, name } = req.body;
 
     let user = await User.findOne({ email });
     if (!user) {
