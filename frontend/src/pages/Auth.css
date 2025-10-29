@@ -1,0 +1,177 @@
+/* 🌈 Shared layout */
+.auth-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #f5f5f5;
+  font-family: "Poppins", sans-serif;
+}
+
+/* 🌟 Navbar */
+.auth-navbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 60px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dashboard-logo {
+  font-size: 26px;
+  font-weight: 700;
+  color: #00e0ff;
+}
+
+/* 💎 Glass Card */
+.auth-card {
+  margin-top: 100px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  border-radius: 16px;
+  padding: 40px 50px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  width: 400px;
+  text-align: center;
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-card h2 {
+  margin-bottom: 10px;
+  font-size: 28px;
+}
+
+.auth-subtext {
+  color: #b0c7ff;
+  margin-bottom: 25px;
+}
+
+/* ✍️ Inputs */
+.auth-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.auth-card input {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 15px;
+}
+
+.auth-card input::placeholder {
+  color: #c9d8e3;
+}
+
+/* 🔘 Buttons */
+.auth-card button {
+  background: linear-gradient(135deg, #ff416c, #ff4b2b);
+  border: none;
+  border-radius: 25px;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.auth-card button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(255, 75, 43, 0.5);
+}
+
+/* 🧠 Google Button */
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 25px;
+  color: white;
+  font-weight: 500;
+  padding: 10px 0;
+  margin-top: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.google-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.google-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+/* 🧭 OR Separator */
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin: 20px 0;
+  color: #b0c7ff;
+  font-size: 14px;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  height: 1px;
+  width: 30%;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ⚠️ Error */
+.auth-error {
+  color: #ff6b6b;
+  font-size: 14px;
+  margin-top: -8px;
+}
+
+/* 🔗 Footer */
+.auth-footer {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #d0e6f7;
+}
+
+.auth-footer a {
+  color: #00e0ff;
+  text-decoration: none;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+/* 📱 Responsive */
+@media (max-width: 480px) {
+  .auth-card {
+    width: 90%;
+    padding: 30px 25px;
+  }
+
+  .auth-navbar {
+    padding: 14px 20px;
+    flex-direction: column;
+    gap: 10px;
+  }
+}

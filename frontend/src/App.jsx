@@ -1,34 +1,85 @@
-import './App.css';
-import Sidebar from './Sidebar.jsx';
-import ChatWindow from './ChatWindow.jsx';
-import { MyContext } from './MyContext.jsx';
-import { useState } from 'react';
-import {v1 as uuidv1} from "uuid";
+import "./App.css";
+import Sidebar from "./Sidebar.jsx";
+import ChatWindow from "./ChatWindow.jsx";
+import { MyContext } from "./MyContext.jsx";
+import { useState, useEffect } from "react";
+import { v1 as uuidv1 } from "uuid";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import Login from "./pages/Login.jsx";
+import Signup from "./pages/Signup.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
 
 function App() {
+  const [isAuthReady, setIsAuthReady] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    !!localStorage.getItem("token")
+  );
+
+  // ✅ Capture Google token early
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+
+    if (token) {
+      localStorage.setItem("token", token);
+      setIsAuthenticated(true);
+      window.history.replaceState({}, "", "/chat"); // clean URL
+    }
+
+    setIsAuthReady(true);
+  }, []);
+
   const [prompt, setPrompt] = useState("");
-  const [reply, setReply]  = useState(null);
+  const [reply, setReply] = useState(null);
   const [currThreadId, setCurrThreadId] = useState(uuidv1());
-  const [prevChats, setPrevChats] = useState([]); // store all chats of curr threads
+  const [prevChats, setPrevChats] = useState([]);
   const [newChat, setNewChat] = useState(true);
   const [allThreads, setAllThreads] = useState([]);
 
   const providerValues = {
-    prompt, setPrompt,
-    reply, setReply,
-    currThreadId, setCurrThreadId,
-    newChat, setNewChat,
-    prevChats, setPrevChats,
-    allThreads, setAllThreads
-  }; // passing values
+    prompt,
+    setPrompt,
+    reply,
+    setReply,
+    currThreadId,
+    setCurrThreadId,
+    newChat,
+    setNewChat,
+    prevChats,
+    setPrevChats,
+    allThreads,
+    setAllThreads,
+  };
+
+  if (!isAuthReady) return null; // wait until we check token
 
   return (
-    <div className="app">
-      <MyContext.Provider value={providerValues}>
-        <Sidebar />
-        <ChatWindow />
-      </MyContext.Provider>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/dashboard" element={<Dashboard isAuthenticated={isAuthenticated} />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+
+        <Route
+          path="/chat"
+          element={
+            isAuthenticated ? (
+              <div className="app">
+                <MyContext.Provider value={providerValues}>
+                  <Sidebar />
+                  <ChatWindow />
+                </MyContext.Provider>
+              </div>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+        {/* default redirect */}
+        <Route path="*" element={<Navigate to="/dashboard" />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
