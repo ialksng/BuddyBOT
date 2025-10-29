@@ -11,10 +11,17 @@ import passport from "./config/passport.js";
 import chatRoutes from "./routes/chat.js";
 import authRoutes from "./routes/auth.js";
 
+// Load environment variables
 dotenv.config();
+
+// Create express app
 const app = express();
 
-// Basic middlewares
+// Fix for __dirname in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Middleware
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -24,7 +31,7 @@ app.use(
   })
 );
 
-// Passport
+// Session and Passport
 app.use(
   session({
     secret: "secretkey",
@@ -35,7 +42,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-// JWT Verification
+// JWT verification middleware
 const verifyToken = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) return res.status(401).json({ message: "Unauthorized" });
@@ -57,29 +64,27 @@ app.use("/api/chat", verifyToken, chatRoutes);
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log("✅ Connected with Database");
+    console.log("Connected with Database");
   } catch (err) {
-    console.error("❌ Failed to connect:", err.message);
+    console.error("Failed to connect:", err.message);
     process.exit(1);
   }
 };
 
-// -------- Serve Frontend (React Build) --------
-// 🏁 Serve Frontend (Production Build)
+// Serve frontend in production
 if (process.env.NODE_ENV === "production") {
   const frontendPath = path.join(__dirname, "../frontend/dist");
   app.use(express.static(frontendPath));
 
-  // ✅ Express 5-compatible catch-all route
+  // Express 5-compatible catch-all route
   app.get(/.*/, (req, res) => {
     res.sendFile(path.resolve(frontendPath, "index.html"));
   });
 }
 
-
-// -------- Start Server --------
+// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
   await connectDB();
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
