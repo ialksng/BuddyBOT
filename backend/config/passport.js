@@ -37,6 +37,8 @@ passport.use(
   )
 );
 
+console.log("🟢 Using Google callback URL:", process.env.GOOGLE_CALLBACK_URL);
+
 passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser(async (id, done) => {
   try {
