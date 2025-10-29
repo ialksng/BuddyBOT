@@ -72,15 +72,14 @@ const connectDB = async () => {
 };
 
 // Serve frontend in production
+// Serve frontend in production
 if (process.env.NODE_ENV === "production") {
   const frontendPath = path.join(__dirname, "../frontend/dist");
-
-  // Serve static files from React build
   app.use(express.static(frontendPath));
 
-  // Catch-all route to serve index.html
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(frontendPath, "index.html"));
+  // ✅ Express 5-safe fallback route
+  app.use("*", (req, res) => {
+    res.sendFile(path.resolve(frontendPath, "index.html"));
   });
 }
 

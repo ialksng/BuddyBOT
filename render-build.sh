@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-# Exit on first error
-set -o errexit
+set -o errexit  # Exit on first error
 
-# Build the frontend
+echo "📦 Installing and building frontend..."
 cd frontend
 npm install
 npm run build
 
-# Go back to root and install backend deps
+echo "📦 Installing backend dependencies..."
 cd ../backend
 npm install
+
+echo "✅ Build completed successfully!"
