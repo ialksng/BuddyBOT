@@ -3,32 +3,52 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import User from "../models/User.js";
 
+// Dynamically set callback URL depending on environment
+const isProduction = process.env.NODE_ENV === "production";
+const callbackURL = isProduction
+  ? "https://buddy-bot-p4ko.onrender.com/api/auth/google/callback"
+  : "http://localhost:3000/api/auth/google/callback";
+
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.GOOGLE_CALLBACK_URL,
+      callbackURL, // dynamic URL
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        const existingUser = await User.findOne({ googleId: profile.id });
-        if (existingUser) return done(null, existingUser);
+        // Check if user already exists
+        let user = await User.findOne({ googleId: profile.id });
 
-        const newUser = await User.create({
-          googleId: profile.id,
-          username: profile.displayName,
-          email: profile.emails[0].value,
-          password: "", // no password for Google users
-          role: "student",
-        });
+        // If not, create new user
+        if (!user) {
+          user = await User.create({
+            googleId: profile.id,
+            username: profile.displayName,
+            email: profile.emails?.[0]?.value || "",
+            password: "", // Google users don’t need password
+            role: "student",
+          });
+        }
 
-        done(null, newUser);
+        return done(null, user);
       } catch (err) {
-        done(err, null);
+        return done(err, null);
       }
     }
   )
 );
+
+// Serialize and deserialize user for session support (optional)
+passport.serializeUser((user, done) => done(null, user.id));
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (err) {
+    done(err, null);
+  }
+});
 
 export default passport;

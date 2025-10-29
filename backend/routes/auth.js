@@ -5,16 +5,18 @@ import { signup, login, forgotPassword } from "../controllers/authController.js"
 
 const router = express.Router();
 
-// Normal signup/login routes
+// ----------------------
+// 🧩 Normal Auth Routes
+// ----------------------
 router.post("/signup", signup);
 router.post("/login", login);
 router.post("/forgot-password", forgotPassword);
 
-// ==========================
-// 🌐 Google OAuth
-// ==========================
+// ----------------------
+// 🌐 Google OAuth Routes
+// ----------------------
 
-// Step 1: Redirect to Google for login
+// Step 1: Redirect to Google login
 router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
@@ -26,17 +28,28 @@ router.get(
   passport.authenticate("google", { failureRedirect: "/login", session: false }),
   (req, res) => {
     try {
+      // Generate JWT
       const token = jwt.sign(
         { id: req.user._id, email: req.user.email },
         process.env.JWT_SECRET,
         { expiresIn: "7d" }
       );
 
-      // ✅ Redirect to frontend with token
-      res.redirect(`${process.env.CLIENT_URL}/chat?token=${token}`);
+      // Dynamically choose frontend URL
+      const frontendURL =
+        process.env.NODE_ENV === "production"
+          ? "https://buddy-bot-p4ko.onrender.com"
+          : "http://localhost:5173";
+
+      // Redirect to frontend chat page with token
+      res.redirect(`${frontendURL}/chat?token=${token}`);
     } catch (err) {
-      console.error("Google callback error:", err);
-      res.redirect(`${process.env.CLIENT_URL}/login?error=google`);
+      console.error("❌ Google OAuth callback error:", err);
+      const frontendURL =
+        process.env.NODE_ENV === "production"
+          ? "https://buddy-bot-p4ko.onrender.com"
+          : "http://localhost:5173";
+      res.redirect(`${frontendURL}/login?error=google`);
     }
   }
 );
