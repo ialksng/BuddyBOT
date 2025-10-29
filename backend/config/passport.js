@@ -3,19 +3,12 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import User from "../models/User.js";
 
-const isProduction = process.env.NODE_ENV === "production";
-const callbackURL =
-  process.env.GOOGLE_CALLBACK_URL ||
-  (isProduction
-    ? "https://buddy-bot-p4ko.onrender.com/api/auth/google/callback"
-    : "http://localhost:3000/api/auth/google/callback");
-
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL,
+      callbackURL: process.env.GOOGLE_CALLBACK_URL, // always from env
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -36,17 +29,5 @@ passport.use(
     }
   )
 );
-
-console.log("🟢 Using Google callback URL:", process.env.GOOGLE_CALLBACK_URL);
-
-passport.serializeUser((user, done) => done(null, user.id));
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findById(id);
-    done(null, user);
-  } catch (err) {
-    done(err, null);
-  }
-});
 
 export default passport;
