@@ -9,10 +9,13 @@ export default function Login() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // Use environment variable for backend URL
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post("http://localhost:3000/api/auth/login", {
+      const { data } = await axios.post(`${API_URL}/api/auth/login`, {
         email,
         password,
       });
@@ -24,7 +27,7 @@ export default function Login() {
   };
 
   const handleGoogle = () => {
-    window.location.href = "http://localhost:3000/api/auth/google";
+    window.location.href = `${API_URL}/api/auth/google`;
   };
 
   return (

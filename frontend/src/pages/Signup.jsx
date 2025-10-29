@@ -10,10 +10,13 @@ export default function Signup() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // Use environment variable for backend API
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post("http://localhost:3000/api/auth/signup", {
+      const { data } = await axios.post(`${API_URL}/api/auth/signup`, {
         username,
         email,
         password,
@@ -26,7 +29,7 @@ export default function Signup() {
   };
 
   const handleGoogle = () => {
-    window.location.href = "http://localhost:3000/api/auth/google";
+    window.location.href = `${API_URL}/api/auth/google`;
   };
 
   return (
